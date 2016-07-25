@@ -5,8 +5,8 @@ import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.text.TextUtils;
-import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.Interpolator;
+import android.view.animation.LinearInterpolator;
 
 /**
  * Created by Rrtoyewx on 16/7/24.
@@ -19,7 +19,7 @@ public abstract class BaseBarrageItem {
     public static final int DEFAULT_TEXT_SIZE = 50;
     public static final int DEFAULT_TEXT_COLOR = Color.BLUE;
     public static final int DEFAULT_SPEED = 5;
-    public static final Interpolator DEFAULT_INTERPOLATOR = new AccelerateDecelerateInterpolator();
+    public static final Interpolator DEFAULT_INTERPOLATOR = new LinearInterpolator();
     protected int color;
     protected int textSize;
     protected String contentStr;
