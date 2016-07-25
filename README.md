@@ -2,8 +2,9 @@
 android BarrageView ,Currently only from right to left to achieve the effect of the barrage , the future may join in all directions .
 
 # Renderings
+[barrageview example.apk download url](http://fir.im/ywlh)
 ![braageview的效果图](http://img.blog.csdn.net/20160725163754986)
-[barrageview下载地址的apk](http://fir.im/ywlh)
+
 
 # how to use
 ## BarrageView
