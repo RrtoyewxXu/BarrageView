@@ -1,0 +1,10 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <declare-styleable name="barrage_view">
+        <attr name="chanel_counts" format="integer" />
+        <attr name="max_barrage_counts_in_line" format="integer"/>
+        <attr name="chanel_add_count" format="integer" />
+        <attr name="auto_adjust_add_count" format="boolean" />
+        <attr name="chanel_add_time" format="integer" />
+    </declare-styleable>
+</resources>
