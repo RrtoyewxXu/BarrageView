@@ -7,6 +7,20 @@ android BarrageView ,Currently only from right to left to achieve the effect of 
 
 
 # how to use
+##Gradle
+```
+compile 'com.youku.rrtoyewx.barragelibrary:barragelibrary:1.0.0'
+```
+## Maven
+```
+<dependency>
+  <groupId>com.youku.rrtoyewx.barragelibrary</groupId>
+  <artifactId>barragelibrary</artifactId>
+  <version>1.0.0</version>
+  <type>pom</type>
+</dependency>
+```
+
 ## BarrageView
 ```
 <com.youku.rrtoyewx.barragelibrary.BarrageView
