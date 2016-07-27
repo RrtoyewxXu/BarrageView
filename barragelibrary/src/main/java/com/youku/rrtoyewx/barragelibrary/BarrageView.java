@@ -136,7 +136,7 @@ public class BarrageView extends View {
         addItemCount = typedArray.getInt(R.styleable.barrage_view_chanel_add_count, DEFAULT_ADD_COUNT);
         maxCountsInChanel = typedArray.getInt(R.styleable.barrage_view_max_barrage_counts_in_line, DEFAULT_MAX_COUNT_IN_LINE);
 
-        Log.e(TAG, "chanelCounts:" + chanelCounts + ",addPerTime:" + addPerTime + ",autoAdjustAddCountFlag:" + autoAdjustAddCountFlag
+        Log.d(TAG, "chanelCounts:" + chanelCounts + ",addPerTime:" + addPerTime + ",autoAdjustAddCountFlag:" + autoAdjustAddCountFlag
                 + ",addItemCount" + addItemCount + ",maxCountsInChanel" + maxCountsInChanel);
 
         typedArray.recycle();
@@ -170,10 +170,10 @@ public class BarrageView extends View {
 
     private void calculateValue(int height) {
         chanelHeight = (height - getPaddingTop() - getPaddingBottom());
-        Log.e(TAG, height + "height");
+        Log.d(TAG, height + "height");
         for (int i = 0; i < chanelCounts; i++) {
             yAxesValues[i] = chanelHeight / chanelCounts * (i + 1);
-            Log.e(TAG, yAxesValues[i] + "yAxesValues[" + i + "]");
+            Log.d(TAG, yAxesValues[i] + "yAxesValues[" + i + "]");
         }
     }
 
@@ -208,13 +208,13 @@ public class BarrageView extends View {
         if (checkInTime()) {
             perAddItemTime = System.currentTimeMillis();
             addItemCount = autoAdjustAddCountFlag ? dynamicCalculateAddCount() : addItemCount;
-            Log.e(TAG, "addItemCount:" + addItemCount + "addPerTime:" + addPerTime);
+            Log.d(TAG, "addItemCount:" + addItemCount + "addPerTime:" + addPerTime);
 
             for (int i = 0; i < addItemCount; i++) {
                 BaseBarrageItem item = waitingItems.pollFirst();
                 if (item != null) {
                     int chanelNumber = calculateNextItemChanel(item);
-                    Log.e(TAG, "addChanelNumber:" + chanelNumber);
+                    Log.d(TAG, "addChanelNumber:" + chanelNumber);
                     if (chanelNumber != -1) {
                         item.setStartInfo(getWidth() - getPaddingRight(), yAxesValues[chanelNumber], getPaddingLeft(), yAxesValues[chanelNumber]);
                         item.draw(canvas);
@@ -258,7 +258,7 @@ public class BarrageView extends View {
 
     @CheckResult
     private boolean checkInTime() {
-        addPerTime = autoAdjustAddCountFlag ? (long) dynamicCalculateAddPerTime() : perAddItemTime;
+        addPerTime = autoAdjustAddCountFlag ? (long) dynamicCalculateAddPerTime() : startAddPerTime;
         return System.currentTimeMillis() - perAddItemTime >= addPerTime;
     }
 
@@ -268,7 +268,7 @@ public class BarrageView extends View {
         for (int chanelNumber = 0; chanelNumber < chanelCounts; chanelNumber++) {
             barrageItemList = runningItemMap.get(chanelNumber);
             if (barrageItemList.isEmpty()) {
-                Log.e(TAG, "empty list " + chanelNumber);
+                Log.d(TAG, "empty list " + chanelNumber);
                 return chanelNumber;
             }
         }
@@ -282,7 +282,7 @@ public class BarrageView extends View {
             }
 
             BaseBarrageItem item = barrageItemList.get(barrageItemList.size() - 1);
-            Log.e(TAG, "before:" + (chanelNumber + randomNumber) % runningItemMap.size());
+            Log.d(TAG, "before:" + (chanelNumber + randomNumber) % runningItemMap.size());
             if (!item.isOverlay(addItem, countLevel)) {
                 return (chanelNumber + randomNumber) % runningItemMap.size();
             }
