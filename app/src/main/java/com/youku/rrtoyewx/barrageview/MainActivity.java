@@ -9,6 +9,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
+import android.view.animation.Interpolator;
 
 import com.youku.rrtoyewx.barragelibrary.BarrageView;
 import com.youku.rrtoyewx.barragelibrary.BaseBarrageItem;
@@ -48,10 +49,40 @@ public class MainActivity extends Activity {
 
     public void addItem(View view) {
         items.clear();
-        for (int i = 0; i < 10; i++) {
-            items.add(new NormalBarrageItem("我是默认弹幕" + i));
-            items.add(new NormalBarrageItem("我是白色色弹幕" + i, Color.WHITE, Utils.sp2px(this, 18)));
-            items.add(new NormalBarrageItem("我是有加速度的弹幕" + i, Color.GREEN, Utils.sp2px(this, 20), 3, new AccelerateInterpolator()));
+        for (int i = 0; i < 30; i++) {
+            items.add(new NormalBarrageItem.BarrageItemBuilder().create(this));
+
+            items.add(new NormalBarrageItem.BarrageItemBuilder()
+                    .textSize(40)
+                    .contentStr("带图片message"+i)
+                    .imageRsd(R.drawable.favourite_love_yellow)
+                    .color(Color.WHITE)
+                    .speed(4)
+                    .paddingSize(40)
+                    .interpolator(new AccelerateDecelerateInterpolator())
+                    .create(this));
+
+            items.add(new NormalBarrageItem.BarrageItemBuilder()
+                    .textSize(40)
+                    .contentStr("带背景message"+i)
+                    .bgRsd(R.drawable.bg)
+                    .color(Color.GREEN)
+                    .speed(4)
+                    .paddingSize(20)
+                    .interpolator(new AccelerateDecelerateInterpolator())
+                    .create(this));
+
+            items.add(new NormalBarrageItem.BarrageItemBuilder()
+                    .textSize(40)
+                    .contentStr("即带背景也带图片的message" +i)
+                    .bgRsd(R.drawable.bg)
+                    .imageRsd(R.drawable.favourite_love_yellow)
+                    .color(Color.RED)
+                    .speed(2)
+                    .paddingSize(20)
+                    .interpolator(new AccelerateDecelerateInterpolator())
+                    .create(this));
+
         }
         barrageView.addItemList(items);
     }

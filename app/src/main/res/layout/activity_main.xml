@@ -12,8 +12,7 @@
         android:id="@+id/barrageview"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        app:auto_adjust_add_count="true"
-        app:chanel_add_count="3"
+        app:chanel_add_count="1"
         app:chanel_add_time="1000"
         app:chanel_counts="5"
         app:max_barrage_counts_in_line="20" />
