@@ -55,4 +55,7 @@ items.add(new NormalBarrageItem.BarrageItemBuilder()
                     .interpolator(new AccelerateDecelerateInterpolator())
                     .create(this));
 
+
+barrageView.addItemList(items);
+
 ```
