@@ -47,6 +47,7 @@ public class BarrageView extends View {
 
     private int chanelCounts;
     private int maxCountsInChanel;
+    private int chanelTotalHeight;
     private int chanelHeight;
     private int[] yAxesValues;
 
@@ -64,18 +65,18 @@ public class BarrageView extends View {
 
     /**
      * DrawStatues
-     * <p>
+     * <p/>
      * ~~~~~~~~~start()            pause()
      * START ----------- RUNNING ------------PAUSE
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ resume()
-     * <p>
+     * <p/>
      * ~~~~~~~ stop()
      * START --------- STOP
      * ~~~~~~~reset()
-     * <p>
+     * <p/>
      * ~~~~~~stop()
      * PAUSE ------- STOP
-     * <p>
+     * <p/>
      * ~~~~~~~stop()
      * RUNNING-------STOP
      *
@@ -169,10 +170,11 @@ public class BarrageView extends View {
     }
 
     private void calculateValue(int height) {
-        chanelHeight = (height - getPaddingTop() - getPaddingBottom());
+        chanelTotalHeight = (height - getPaddingTop() - getPaddingBottom());
+        chanelHeight = chanelTotalHeight / chanelCounts;
         Log.d(TAG, height + "height");
         for (int i = 0; i < chanelCounts; i++) {
-            yAxesValues[i] = chanelHeight / chanelCounts * (i + 1);
+            yAxesValues[i] = chanelTotalHeight / chanelCounts * (i + 1) - chanelHeight / 2;
             Log.d(TAG, yAxesValues[i] + "yAxesValues[" + i + "]");
         }
     }
