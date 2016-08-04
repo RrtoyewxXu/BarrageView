@@ -3,10 +3,9 @@
 android BarrageView ,Currently only from right to left to achieve the effect of the barrage , the future may join in all directions .
 
 # Renderings
-[barrageview example.apk download url](http://fir.im/ywlh)
 ![barrageView效果图](images/barrageView.gif)
 
-# how to use
+# How to use
 ##Gradle
 ```
 compile 'com.youku.rrtoyewx.barragelibrary:barragelibrary:1.0.2'
