@@ -8,14 +8,14 @@ android BarrageView ,Currently only from right to left to achieve the effect of 
 # How to use
 ##Gradle
 ```
-compile 'com.youku.rrtoyewx.barragelibrary:barragelibrary:1.0.2'
+compile 'com.youku.rrtoyewx.barragelibrary:barragelibrary:1.0.3'
 ```
 ## Maven
 ```
 <dependency>
   <groupId>com.youku.rrtoyewx.barragelibrary</groupId>
   <artifactId>barragelibrary</artifactId>
-  <version>1.0.2</version>
+  <version>1.0.3</version>
   <type>pom</type>
 </dependency>
 ```
@@ -49,6 +49,9 @@ items.add(new NormalBarrageItem.BarrageItemBuilder()
                     .contentStr("即带背景也带图片的message" +i)
                     .bgRsd(R.drawable.bg)
                     .imageRsd(R.drawable.favourite_love_yellow)
+                    .imageWidth(75)
+                    .imageHeight(42)
+                    .imageDistanceText(20)
                     .color(Color.RED)
                     .speed(2)
                     .paddingSize(20)
