@@ -8,6 +8,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.View;
 
+
 import java.util.Deque;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -40,7 +41,7 @@ public class BarrageView extends View {
 
     //default value
     private static final int DEFAULT_CHANEL_COUNTS = 10;
-    private static final int DEFAULT_ADD_COUNT = 3;
+    private static final int DEFAULT_ADD_COUNT = 1;
     private static final int DEFAULT_ADD_TIME_DISTANCE = 1000;
     private static final boolean DEFAULT_AUTO_ADJUST_ADD_COUNT = false;
     private static final int DEFAULT_MAX_COUNT_IN_LINE = 100;
@@ -51,13 +52,21 @@ public class BarrageView extends View {
     private int chanelHeight;
     private int[] yAxesValues;
 
+    //每次取的间隔时间
     private long addPerTime;
     private long startAddPerTime;
+    //每次取的个数
     private int addItemCount;
     private int startAddItemCount;
+    //是否自动调整取的个数以及每次取的时间
     private boolean autoAdjustAddCountFlag;
+    //上次取弹幕的时间
     private long perAddItemTime;
+    //等待弹幕个数的级别
     private CountLevel countLevel;
+    //热度：控制显示弹幕的行
+    private boolean hotDegreeFlag;
+
 
     private DrawStatus drawStatus;
     private boolean autoPauseFlag;
@@ -65,18 +74,18 @@ public class BarrageView extends View {
 
     /**
      * DrawStatues
-     * <p/>
+     * <p>
      * ~~~~~~~~~start()            pause()
      * START ----------- RUNNING ------------PAUSE
      * ~~~~~~~~~~~~~~~~~~~~~~~~~~~~ resume()
-     * <p/>
+     * <p>
      * ~~~~~~~ stop()
      * START --------- STOP
      * ~~~~~~~reset()
-     * <p/>
+     * <p>
      * ~~~~~~stop()
      * PAUSE ------- STOP
-     * <p/>
+     * <p>
      * ~~~~~~~stop()
      * RUNNING-------STOP
      *
@@ -267,31 +276,36 @@ public class BarrageView extends View {
     @CheckResult
     private int calculateNextItemChanel(BaseBarrageItem addItem) {
         List<BaseBarrageItem> barrageItemList = null;
-        for (int chanelNumber = 0; chanelNumber < chanelCounts; chanelNumber++) {
-            barrageItemList = runningItemMap.get(chanelNumber);
+        int curChanelCount = hotDegreeFlag ? chanelCounts : chanelCounts / 2;
+        int randomNumber = (int) (Math.random() * curChanelCount);
+
+        //empty list
+        for (int chanelNumber = 0; chanelNumber < curChanelCount; chanelNumber++) {
+            barrageItemList = runningItemMap.get((randomNumber + chanelNumber) % curChanelCount);
             if (barrageItemList.isEmpty()) {
-                Log.d(TAG, "empty list " + chanelNumber);
-                return chanelNumber;
+                Log.d(TAG, "empty list " + (chanelNumber + randomNumber) % curChanelCount);
+                return (chanelNumber + randomNumber) % curChanelCount;
             }
         }
 
-        int randomNumber = (int) (Math.random() * runningItemMap.size());
-        for (int chanelNumber = 0; chanelNumber < chanelCounts; chanelNumber++) {
-            barrageItemList = runningItemMap.get((chanelNumber + randomNumber) % runningItemMap.size());
+        //list size < maxCountsInChanel
+        for (int chanelNumber = 0; chanelNumber < curChanelCount; chanelNumber++) {
+            barrageItemList = runningItemMap.get((chanelNumber + randomNumber) % curChanelCount);
 
             if (barrageItemList.size() == maxCountsInChanel) {
                 continue;
             }
 
             BaseBarrageItem item = barrageItemList.get(barrageItemList.size() - 1);
-            Log.d(TAG, "before:" + (chanelNumber + randomNumber) % runningItemMap.size());
+            Log.d(TAG, "before:" + (chanelNumber + randomNumber) % curChanelCount);
             if (!item.isOverlay(addItem, countLevel)) {
-                return (chanelNumber + randomNumber) % runningItemMap.size();
+                return (chanelNumber + randomNumber) % curChanelCount;
             }
         }
 
         return -1;
     }
+
 
     private void autoPauseIfEmpty() {
         if (!waitingItems.isEmpty()) {
@@ -366,6 +380,10 @@ public class BarrageView extends View {
             autoPauseFlag = false;
             postInvalidate();
         }
+    }
+
+    public void setHotDegreeFlag(boolean hotDegreeFlag) {
+        this.hotDegreeFlag = hotDegreeFlag;
     }
 
     public void start() {

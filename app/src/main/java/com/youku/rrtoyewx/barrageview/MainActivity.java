@@ -9,6 +9,7 @@ import android.view.Window;
 import android.view.WindowManager;
 import android.view.animation.AccelerateDecelerateInterpolator;
 import android.view.animation.AccelerateInterpolator;
+import android.view.animation.DecelerateInterpolator;
 import android.view.animation.Interpolator;
 
 import com.youku.rrtoyewx.barragelibrary.BarrageView;
@@ -50,7 +51,9 @@ public class MainActivity extends Activity {
     public void addItem(View view) {
         items.clear();
         for (int i = 0; i < 30; i++) {
-            items.add(new NormalBarrageItem.BarrageItemBuilder().create(this));
+            items.add(new NormalBarrageItem.BarrageItemBuilder().
+                    contentStr("你好").
+                    speed(4).create(this));
 
             items.add(new NormalBarrageItem.BarrageItemBuilder()
                     .textSize(40)
@@ -59,7 +62,6 @@ public class MainActivity extends Activity {
                     .color(Color.WHITE)
                     .speed(4)
                     .paddingSize(40)
-                    .interpolator(new AccelerateDecelerateInterpolator())
                     .create(this));
 
             items.add(new NormalBarrageItem.BarrageItemBuilder()
@@ -67,9 +69,9 @@ public class MainActivity extends Activity {
                     .contentStr("带背景message"+i)
                     .bgRsd(R.drawable.bg)
                     .color(Color.GREEN)
-                    .speed(4)
+                    .speed(5)
                     .paddingSize(20)
-                    .interpolator(new AccelerateDecelerateInterpolator())
+                    .interpolator(new DecelerateInterpolator())
                     .create(this));
 
             items.add(new NormalBarrageItem.BarrageItemBuilder()
@@ -78,9 +80,9 @@ public class MainActivity extends Activity {
                     .bgRsd(R.drawable.bg)
                     .imageRsd(R.drawable.favourite_love_yellow)
                     .color(Color.RED)
-                    .speed(2)
+                    .speed(5)
                     .paddingSize(20)
-                    .interpolator(new AccelerateDecelerateInterpolator())
+                    .interpolator(new DecelerateInterpolator())
                     .create(this));
 
         }

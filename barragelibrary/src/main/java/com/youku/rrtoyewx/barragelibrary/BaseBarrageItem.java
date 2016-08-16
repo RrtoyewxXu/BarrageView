@@ -8,11 +8,9 @@ import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
 import android.support.annotation.DrawableRes;
 import android.text.Layout;
-import android.text.Spannable;
 import android.text.SpannableString;
 import android.text.StaticLayout;
 import android.text.TextPaint;
-import android.text.style.ImageSpan;
 import android.view.animation.Interpolator;
 import android.view.animation.LinearInterpolator;
 
@@ -38,7 +36,12 @@ public abstract class BaseBarrageItem {
 
     protected String contentStr;
     protected SpannableString contentSpanStr;
-    private int imageRsd;
+
+    protected Drawable imageDrawable;
+    protected int imageRsd;
+    protected int imageWidth = 75;
+    protected int imageHeight = 42;
+    protected int imageDistanceText = 10;
 
     protected int bgRsd;
     protected Paint bgPaint;
@@ -48,6 +51,7 @@ public abstract class BaseBarrageItem {
     protected StaticLayout textStaticLayout;
 
     protected Rect textRect;
+    protected int offset;
     protected int textStrWidth;
     protected int textStrHeight;
 
@@ -55,11 +59,14 @@ public abstract class BaseBarrageItem {
     protected int startYAxes;
     protected int endXAxes;
     protected int endYAxes;
-    protected long precomputedTime;
+    protected long preComputedTime;
     protected long startTime;
 
     protected int currentXAxes;
     protected int currentYAxes;
+
+    protected int totalHeight;
+    protected int totalWidth;
 
     protected int speed;
     protected Interpolator accelerationFactor;
@@ -73,7 +80,7 @@ public abstract class BaseBarrageItem {
         textRect = new Rect();
     }
 
-    protected BaseBarrageItem(Context context, @DrawableRes int imageRsd, @DrawableRes int bgRsd, int paddingSize, String contentStr, int color, int textSize, int speed, Interpolator interpolator) {
+    protected BaseBarrageItem(Context context, @DrawableRes int imageRsd, int imageHeight, int imageWidth, int imageDistanceText, @DrawableRes int bgRsd, int paddingSize, String contentStr, int color, int textSize, int speed, Interpolator interpolator) {
         this.context = context;
         this.accelerationFactor = interpolator;
         this.color = color;
@@ -82,6 +89,9 @@ public abstract class BaseBarrageItem {
         this.speed = speed;
         this.bgRsd = bgRsd;
         this.imageRsd = imageRsd;
+        this.imageWidth = imageWidth;
+        this.imageHeight = imageHeight;
+        this.imageDistanceText = imageDistanceText;
         this.paddingSize = paddingSize;
 
         init();
@@ -90,10 +100,10 @@ public abstract class BaseBarrageItem {
     private void init() {
         initPaint();
         initTextInformation();
-        initTextStaticLayout();
+        initImageDrawable();
         initBackgroundDrawable();
+        initTotalRect();
     }
-
 
     private void initPaint() {
         textPaint.setColor(color);
@@ -101,38 +111,52 @@ public abstract class BaseBarrageItem {
     }
 
     private void initTextInformation() {
-        if (imageRsd != -1) {
-            calculateTextWidth();
-        } else {
-            textPaint.getTextBounds(contentStr, 0, contentStr.length(), textRect);
-        }
+        contentStr = contentStr.trim();
+
+        textPaint.getTextBounds(contentStr, 0, contentStr.length(), textRect);
 
         textStrWidth = textRect.width();
         textStrHeight = textRect.height();
-    }
 
-    private void calculateTextWidth() {
-        textPaint.getTextBounds(contentStr + "三字", 0, contentStr.length() + 2, textRect);
-        contentStr = "  " + contentStr;
-    }
+        Paint.FontMetrics fontMetrics = textPaint.getFontMetrics();
 
-    private void initTextStaticLayout() {
+        offset = (int) (textStrHeight - Math.abs(fontMetrics.ascent) - Math.abs(fontMetrics.bottom));
         contentSpanStr = new SpannableString(contentStr);
+        textStaticLayout = new StaticLayout(contentSpanStr, textPaint, Integer.MAX_VALUE, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
+    }
+
+    private void initImageDrawable() {
 
         if (imageRsd != -1) {
-            Drawable d = context.getResources().getDrawable(imageRsd);
-            d.setBounds(0, 0, textRect.height(), textRect.height());
-            ImageSpan imageSpan = new ImageSpan(d, ImageSpan.ALIGN_BASELINE);
-            contentSpanStr.setSpan(imageSpan, 0, 1, Spannable.SPAN_EXCLUSIVE_EXCLUSIVE);
+            imageDrawable = context.getResources().getDrawable(imageRsd);
+            imageDrawable.setBounds(0, 0, imageWidth, imageHeight);
         }
-
-        textStaticLayout = new StaticLayout(contentSpanStr, textPaint, Integer.MAX_VALUE, Layout.Alignment.ALIGN_NORMAL, 1.0f, 0.0f, false);
     }
 
     private void initBackgroundDrawable() {
         if (bgRsd != -1) {
             bgDrawable = context.getResources().getDrawable(bgRsd);
-            bgDrawable.setBounds(0, 0, textRect.width() + paddingSize * 2, textRect.height() + paddingSize * 2);
+            if (imageRsd != -1) {
+                bgDrawable.setBounds(0, 0, textRect.width() + paddingSize * 2 + imageWidth + imageDistanceText, textRect.height() + paddingSize);
+            } else {
+                bgDrawable.setBounds(0, 0, textRect.width() + paddingSize * 2, textRect.height() + paddingSize);
+            }
+        }
+    }
+
+    private void initTotalRect() {
+        if (imageDrawable == null && bgDrawable == null) {
+            totalWidth = textRect.width();
+            totalHeight = textRect.height();
+        } else if (imageDrawable == null && bgDrawable != null) {
+            totalHeight = textRect.height() + paddingSize;
+            totalWidth = textRect.width() + paddingSize * 2;
+        } else if (imageDrawable != null && bgDrawable == null) {
+            totalHeight = textRect.height();
+            totalWidth = textRect.width() + imageWidth + imageDistanceText;
+        } else {
+            totalWidth = textRect.width() + paddingSize * 2 + imageWidth + imageDistanceText;
+            totalHeight = textRect.height() + paddingSize;
         }
     }
 
@@ -150,7 +174,7 @@ public abstract class BaseBarrageItem {
         this.startYAxes = startYValue;
         this.endXAxes = endXvalue;
         this.endYAxes = endYvalue;
-        precomputedTime = Math.abs(startXValue - endXvalue - textStrWidth) / speed * 10;
+        preComputedTime = Math.abs(startXValue - endXvalue + totalWidth) / speed * 10;
         this.startTime = System.currentTimeMillis();
 
         this.currentXAxes = startXValue;

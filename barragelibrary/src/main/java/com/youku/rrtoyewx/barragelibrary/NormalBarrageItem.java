@@ -14,27 +14,42 @@ import static com.youku.rrtoyewx.barragelibrary.BarrageView.CountLevel;
 public class NormalBarrageItem extends BaseBarrageItem {
     private static final String TAG = NormalBarrageItem.class.getSimpleName();
 
-    private NormalBarrageItem(Context context, @DrawableRes int imageRsd, @DrawableRes int bgRsd, int paddingSize, String contentStr, int color, int textSize, int speed, Interpolator interpolator) {
-        super(context, imageRsd, bgRsd, paddingSize, contentStr, color, textSize, speed, interpolator);
+    private NormalBarrageItem(Context context, @DrawableRes int imageRsd, int imageHeight, int imageWidth, int imageDistanceText, @DrawableRes int bgRsd, int paddingSize, String contentStr, int color, int textSize, int speed, Interpolator interpolator) {
+        super(context, imageRsd, imageHeight, imageWidth, imageDistanceText, bgRsd, paddingSize, contentStr, color, textSize, speed, interpolator);
     }
+
 
     @Override
     protected void onDraw(Canvas canvas) {
         drawBackground(canvas);
+        drawImage(canvas);
         drawText(canvas);
     }
 
     private void drawText(Canvas canvas) {
         canvas.save();
-        canvas.translate(currentXAxes, currentYAxes - textRect.height());
+        if (imageDrawable != null) {
+            canvas.translate(currentXAxes + imageWidth + imageDistanceText, currentYAxes - textRect.height());
+        } else {
+            canvas.translate(currentXAxes, currentYAxes - textRect.height());
+        }
         textStaticLayout.draw(canvas);
         canvas.restore();
+    }
+
+    private void drawImage(Canvas canvas) {
+        if (imageDrawable != null) {
+            canvas.save();
+            canvas.translate(currentXAxes, currentYAxes - imageHeight - offset / 2);
+            imageDrawable.draw(canvas);
+            canvas.restore();
+        }
     }
 
     private void drawBackground(Canvas canvas) {
         if (bgDrawable != null) {
             canvas.save();
-            canvas.translate(currentXAxes - paddingSize, currentYAxes - textRect.height() - paddingSize);
+            canvas.translate(currentXAxes - paddingSize, currentYAxes - textRect.height() - paddingSize / 2 - offset / 2);
             bgDrawable.draw(canvas);
             canvas.restore();
         }
@@ -42,33 +57,34 @@ public class NormalBarrageItem extends BaseBarrageItem {
 
     @Override
     protected void onAfterDraw(Canvas canvas) {
-        if (System.currentTimeMillis() - startTime <= precomputedTime) {
-            double factor = (System.currentTimeMillis() - startTime) * 1.0 / precomputedTime;
+        if (System.currentTimeMillis() - startTime <= preComputedTime) {
+            double factor = (System.currentTimeMillis() - startTime) * 1.0 / preComputedTime;
             float interpolation = accelerationFactor.getInterpolation((float) factor);
 
-            currentXAxes = (int) (startXAxes - (startXAxes - endXAxes + textStrWidth) * interpolation);
+            currentXAxes = (int) (startXAxes - (startXAxes - endXAxes + totalWidth) * interpolation);
         } else {
-            currentXAxes = -textStrWidth;
+            currentXAxes = endXAxes - totalWidth;
         }
     }
 
     @Override
     public boolean isDrawEnd() {
-        return currentXAxes + getContentWidth() <= endXAxes;
+        return currentXAxes + totalWidth <= endXAxes;
     }
 
     @Override
-    public boolean isOverlay(BaseBarrageItem item, CountLevel level) {
+    public boolean isOverlay(BaseBarrageItem item, BarrageView.CountLevel level) {
         int distanceWidth = -1;
         switch (level) {
             case HIGH:
-                distanceWidth = (int) (textStrWidth * 0.5);
+                distanceWidth = (int) (totalWidth * 0.5);
                 break;
             case MEDIUM:
-                distanceWidth = (int) (textStrWidth * 0.7);
+                distanceWidth = (int) (totalWidth * 0.7);
                 break;
+            default:
             case LOW:
-                distanceWidth = (int) (textStrWidth * 1.2);
+                distanceWidth = (int) (totalWidth * 1.2);
 
         }
         return currentXAxes + distanceWidth > startXAxes;
@@ -84,6 +100,9 @@ public class NormalBarrageItem extends BaseBarrageItem {
         private int paddingSize = DEFAULT_PADDING_SIZE;
         private int speed = DEFAULT_SPEED;
         private Interpolator interpolator = DEFAULT_INTERPOLATOR;
+        private int imageWidth = 75;
+        private int imageHeight = 42;
+        private int imageDistanceText = 10;
 
         public BarrageItemBuilder color(int color) {
             this.color = color;
@@ -102,6 +121,21 @@ public class NormalBarrageItem extends BaseBarrageItem {
 
         public BarrageItemBuilder imageRsd(@DrawableRes int imageRsd) {
             this.imageRsd = imageRsd;
+            return this;
+        }
+
+        public BarrageItemBuilder imageWidth(int imageWidth) {
+            this.imageWidth = imageWidth;
+            return this;
+        }
+
+        public BarrageItemBuilder imageHeight(int imageHeight) {
+            this.imageHeight = imageHeight;
+            return this;
+        }
+
+        public BarrageItemBuilder imageDistanceText(int imageDistanceText) {
+            this.imageDistanceText = imageDistanceText;
             return this;
         }
 
@@ -126,7 +160,7 @@ public class NormalBarrageItem extends BaseBarrageItem {
         }
 
         public NormalBarrageItem create(Context context) {
-            return new NormalBarrageItem(context, imageRsd, bgRsd, paddingSize, contentStr, color, textSize, speed, interpolator);
+            return new NormalBarrageItem(context, imageRsd, imageHeight, imageWidth, imageDistanceText, bgRsd, paddingSize, contentStr, color, textSize, speed, interpolator);
         }
     }
 }
